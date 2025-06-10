@@ -24,8 +24,8 @@ export default function SalesChart() {
           <LineChart data={data}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="name" />
-            <YAxis />
-            <Tooltip />
+            <YAxis tickFormatter={(value) => `₹${value}`} />
+            <Tooltip formatter={(value) => [`₹${value}`, 'Sales']} />
             <Line 
               type="monotone" 
               dataKey="sales" 

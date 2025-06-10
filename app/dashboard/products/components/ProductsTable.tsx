@@ -69,7 +69,7 @@ export default function ProductsTable({ products, loading, onEdit, onDelete }: P
             <TableCell className="font-medium">{product.name}</TableCell>
             <TableCell>{product.sku}</TableCell>
             <TableCell>{product.category}</TableCell>
-            <TableCell>${product.price}</TableCell>
+            <TableCell>₹{product.price}</TableCell>
             <TableCell>{product.stockQty}</TableCell>
             <TableCell>{product.reorderLevel}</TableCell>
             <TableCell>

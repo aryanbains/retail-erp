@@ -200,12 +200,12 @@ export default function OrderFormModal({ open, onClose, onSubmit }: OrderFormMod
                   </div>
                   <div>
                     <label className="text-sm font-medium">Unit Price</label>
-                    <Input value={`$${item.unitPrice}`} disabled />
+                    <Input value={`₹${item.unitPrice}`} disabled />
                   </div>
                   <div className="flex items-end justify-between">
                     <div>
                       <label className="text-sm font-medium">Subtotal</label>
-                      <div className="text-lg font-semibold">${item.subtotal.toFixed(2)}</div>
+                      <div className="text-lg font-semibold">₹{item.subtotal.toFixed(2)}</div>
                     </div>
                     <Button
                       type="button"
@@ -224,7 +224,7 @@ export default function OrderFormModal({ open, onClose, onSubmit }: OrderFormMod
           <div className="border-t pt-4">
             <div className="flex justify-between items-center">
               <span className="text-lg font-semibold">Total Amount:</span>
-              <span className="text-2xl font-bold">${calculateTotal().toFixed(2)}</span>
+              <span className="text-2xl font-bold">₹{calculateTotal().toFixed(2)}</span>
             </div>
           </div>
 

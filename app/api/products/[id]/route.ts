@@ -7,7 +7,7 @@ export async function GET(
   request: Request,
   { params }: { params: { id: string } }
 ) {
-  const { userId } = auth()
+  const { userId } = await auth()
   if (!userId) {
     return new Response('Unauthorized', { status: 401 })
   }
@@ -28,7 +28,7 @@ export async function PUT(
   request: Request,
   { params }: { params: { id: string } }
 ) {
-  const { userId } = auth()
+  const { userId } = await auth()
   if (!userId) {
     return new Response('Unauthorized', { status: 401 })
   }
@@ -59,18 +59,36 @@ export async function DELETE(
   request: Request,
   { params }: { params: { id: string } }
 ) {
-  const { userId } = auth()
+  const { userId } = await auth()
   if (!userId) {
     return new Response('Unauthorized', { status: 401 })
   }
 
-  const deletedProduct = await db.delete(products)
-    .where(eq(products.id, params.id))
-    .returning()
+  // Check if user has Admin role
+  try {
+    const userResponse = await fetch('http://localhost:3000/api/user/role', {
+      headers: {
+        'Cookie': request.headers.get('cookie') || ''
+      }
+    })
+    
+    const userData = await userResponse.json()
+    
+    if (userData.role !== 'Admin') {
+      return new Response('Forbidden: Admin access required', { status: 403 })
+    }
 
-  if (deletedProduct.length === 0) {
-    return new Response('Product not found', { status: 404 })
+    const deletedProduct = await db.delete(products)
+      .where(eq(products.id, params.id))
+      .returning()
+
+    if (deletedProduct.length === 0) {
+      return new Response('Product not found', { status: 404 })
+    }
+
+    return new Response(null, { status: 204 })
+  } catch (error) {
+    console.error('Error deleting product:', error)
+    return new Response('Internal Server Error', { status: 500 })
   }
-
-  return new Response(null, { status: 204 })
 }

@@ -29,7 +29,7 @@ const activities = [
   {
     id: 4,
     action: 'Payment received',
-    description: '$1,234 from Order #1233',
+    description: '₹1,234 from Order #1233',
     timestamp: new Date(Date.now() - 10800000),
     type: 'payment'
   },

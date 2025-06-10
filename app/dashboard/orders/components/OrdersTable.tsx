@@ -73,7 +73,7 @@ export default function OrdersTable({ orders, loading, onStatusChange, onViewDet
             <TableCell className="font-medium">{order.id.slice(0, 8)}</TableCell>
             <TableCell>{format(new Date(order.orderDate), 'MMM d, yyyy')}</TableCell>
             <TableCell>{order.customerName || 'N/A'}</TableCell>
-            <TableCell>${order.totalAmount}</TableCell>
+            <TableCell>₹{order.totalAmount}</TableCell>
             <TableCell>
               <Badge className={getStatusColor(order.status)}>
                 {order.status}

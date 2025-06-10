@@ -13,7 +13,7 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url)
     const search = searchParams.get('search') || ''
 
-    let query = db.select().from(products).orderBy(desc(products.id))
+    let query = db.select().from(products).where(1 === 1).orderBy(desc(products.id))
 
     if (search) {
       query = db.select()

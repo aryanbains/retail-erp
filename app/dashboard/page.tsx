@@ -28,7 +28,7 @@ export default function DashboardPage() {
     },
     {
       title: 'Total Revenue',
-      value: '$45,678',
+      value: '₹45,678',
       icon: TrendingUp,
       change: '+18%',
       color: 'text-orange-600'

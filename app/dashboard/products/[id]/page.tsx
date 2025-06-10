@@ -91,7 +91,7 @@ export default function ProductDetailPage() {
             </div>
             <div>
               <p className="text-sm text-gray-500">Price</p>
-              <p className="font-medium text-lg">${product.price}</p>
+              <p className="font-medium text-lg">₹{product.price}</p>
             </div>
             <div>
               <p className="text-sm text-gray-500">Status</p>
