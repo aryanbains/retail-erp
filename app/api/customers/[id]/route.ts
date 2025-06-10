@@ -5,16 +5,18 @@ import { eq } from 'drizzle-orm'
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const { userId } = await auth()
   if (!userId) {
     return new Response('Unauthorized', { status: 401 })
   }
 
+  const { id } = await params
+
   const customer = await db.select()
     .from(customers)
-    .where(eq(customers.id, params.id))
+    .where(eq(customers.id, id))
     .limit(1)
 
   if (customer.length === 0) {
@@ -26,13 +28,14 @@ export async function GET(
 
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const { userId } = await auth()
   if (!userId) {
     return new Response('Unauthorized', { status: 401 })
   }
 
+  const { id } = await params
   const body = await request.json()
 
   const updatedCustomer = await db.update(customers)
@@ -42,7 +45,7 @@ export async function PUT(
       phone: body.phone,
       address: body.address
     })
-    .where(eq(customers.id, params.id))
+    .where(eq(customers.id, id))
     .returning()
 
   if (updatedCustomer.length === 0) {
@@ -54,15 +57,17 @@ export async function PUT(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const { userId } = await auth()
   if (!userId) {
     return new Response('Unauthorized', { status: 401 })
   }
 
+  const { id } = await params
+
   const deletedCustomer = await db.delete(customers)
-    .where(eq(customers.id, params.id))
+    .where(eq(customers.id, id))
     .returning()
 
   if (deletedCustomer.length === 0) {
