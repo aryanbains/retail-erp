@@ -5,16 +5,18 @@ import { eq } from 'drizzle-orm'
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const { userId } = await auth()
   if (!userId) {
     return new Response('Unauthorized', { status: 401 })
   }
 
+  const { id } = await params
+
   const product = await db.select()
     .from(products)
-    .where(eq(products.id, params.id))
+    .where(eq(products.id, id))
     .limit(1)
 
   if (product.length === 0) {
@@ -26,13 +28,14 @@ export async function GET(
 
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const { userId } = await auth()
   if (!userId) {
     return new Response('Unauthorized', { status: 401 })
   }
 
+  const { id } = await params
   const body = await request.json()
 
   const updatedProduct = await db.update(products)
@@ -45,7 +48,7 @@ export async function PUT(
       reorderLevel: body.reorderLevel,
       status: body.status
     })
-    .where(eq(products.id, params.id))
+    .where(eq(products.id, id))
     .returning()
 
   if (updatedProduct.length === 0) {
@@ -57,12 +60,14 @@ export async function PUT(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const { userId } = await auth()
   if (!userId) {
     return new Response('Unauthorized', { status: 401 })
   }
+
+  const { id } = await params
 
   // Check if user has Admin role
   try {
@@ -79,7 +84,7 @@ export async function DELETE(
     }
 
     const deletedProduct = await db.delete(products)
-      .where(eq(products.id, params.id))
+      .where(eq(products.id, id))
       .returning()
 
     if (deletedProduct.length === 0) {
