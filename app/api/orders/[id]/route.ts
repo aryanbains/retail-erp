@@ -5,16 +5,18 @@ import { eq } from 'drizzle-orm'
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const { userId } = await auth()
   if (!userId) {
     return new Response('Unauthorized', { status: 401 })
   }
 
+  const { id } = await params
+
   const order = await db.select()
     .from(orders)
-    .where(eq(orders.id, params.id))
+    .where(eq(orders.id, id))
     .limit(1)
 
   if (order.length === 0) {
@@ -26,20 +28,21 @@ export async function GET(
 
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const { userId } = await auth()
   if (!userId) {
     return new Response('Unauthorized', { status: 401 })
   }
 
+  const { id } = await params
   const body = await request.json()
 
   const updatedOrder = await db.update(orders)
     .set({
       status: body.status
     })
-    .where(eq(orders.id, params.id))
+    .where(eq(orders.id, id))
     .returning()
 
   if (updatedOrder.length === 0) {
@@ -52,7 +55,7 @@ export async function PUT(
     await db.insert(activityLogs).values({
       userId: user[0].id,
       action: `Updated order status to ${body.status}`,
-      entityId: params.id,
+      entityId: id,
       entityType: 'order'
     })
   }
