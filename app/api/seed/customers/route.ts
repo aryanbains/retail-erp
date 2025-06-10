@@ -4,7 +4,7 @@ import { customers } from '@/lib/db/schema'
 import { generateMockCustomers } from '@/lib/mock-data'
 
 export async function POST() {
-  const { userId } = auth()
+  const { userId } = await auth()
   if (!userId) {
     return new Response('Unauthorized', { status: 401 })
   }

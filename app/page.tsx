@@ -4,7 +4,7 @@ import { auth } from '@clerk/nextjs/server'
 import Link from 'next/link'
 
 export default async function HomePage() {
-  const { userId } = auth()
+  const { userId } = await auth()
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">

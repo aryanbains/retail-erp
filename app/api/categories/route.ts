@@ -4,7 +4,7 @@ import { products } from '@/lib/db/schema'
 import { sql } from 'drizzle-orm'
 
 export async function GET() {
-  const { userId } = auth()
+  const { userId } = await auth()
   if (!userId) {
     return new Response('Unauthorized', { status: 401 })
   }

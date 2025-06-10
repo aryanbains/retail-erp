@@ -31,6 +31,34 @@ import { X, Plus } from 'lucide-react'
 import { orderSchema, OrderFormData } from '@/lib/validations/order'
 import { useToast } from '@/components/ui/use-toast'
 
+// Define types for your data structures
+interface Customer {
+  id: string
+  name: string
+  email: string
+  phone: string
+  address: string
+}
+
+interface Product {
+  id: string
+  name: string
+  sku: string
+  category: string
+  price: string | number
+  stockQty: number
+  reorderLevel: number
+  status: string
+}
+
+interface OrderItem {
+  productId: string
+  productName: string
+  quantity: number
+  unitPrice: number
+  subtotal: number
+}
+
 interface OrderFormModalProps {
   open: boolean
   onClose: () => void
@@ -38,9 +66,9 @@ interface OrderFormModalProps {
 }
 
 export default function OrderFormModal({ open, onClose, onSubmit }: OrderFormModalProps) {
-  const [customers, setCustomers] = useState([])
-  const [products, setProducts] = useState([])
-  const [selectedItems, setSelectedItems] = useState<any[]>([])
+  const [customers, setCustomers] = useState<Customer[]>([])
+  const [products, setProducts] = useState<Product[]>([])
+  const [selectedItems, setSelectedItems] = useState<OrderItem[]>([])
 
   const form = useForm<OrderFormData>({
     resolver: zodResolver(orderSchema),
@@ -92,21 +120,32 @@ export default function OrderFormModal({ open, onClose, onSubmit }: OrderFormMod
     setSelectedItems(selectedItems.filter((_, i) => i !== index))
   }
 
-  const updateItem = (index: number, field: string, value: any) => {
+  const updateItem = (index: number, field: keyof OrderItem, value: string | number) => {
     const updated = [...selectedItems]
-    updated[index][field] = value
-
-    if (field === 'productId') {
-      const product = products.find((p: any) => p.id === value)
-      if (product) {
-        updated[index].productName = product.name
-        updated[index].unitPrice = parseFloat(product.price)
-        updated[index].subtotal = updated[index].quantity * parseFloat(product.price)
-      }
-    }
-
-    if (field === 'quantity') {
-      updated[index].subtotal = value * updated[index].unitPrice
+    
+    switch (field) {
+      case 'productId':
+        const product = products.find((p) => p.id === value)
+        if (product) {
+          updated[index].productId = value as string
+          updated[index].productName = product.name
+          updated[index].unitPrice = parseFloat(product.price.toString())
+          updated[index].subtotal = updated[index].quantity * parseFloat(product.price.toString())
+        }
+        break
+      case 'quantity':
+        updated[index].quantity = value as number
+        updated[index].subtotal = (value as number) * updated[index].unitPrice
+        break
+      case 'productName':
+        updated[index].productName = value as string
+        break
+      case 'unitPrice':
+        updated[index].unitPrice = value as number
+        break
+      case 'subtotal':
+        updated[index].subtotal = value as number
+        break
     }
 
     setSelectedItems(updated)
@@ -146,7 +185,7 @@ export default function OrderFormModal({ open, onClose, onSubmit }: OrderFormMod
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {customers.map((customer: any) => (
+                      {customers.map((customer) => (
                         <SelectItem key={customer.id} value={customer.id}>
                           {customer.name}
                         </SelectItem>
@@ -181,7 +220,7 @@ export default function OrderFormModal({ open, onClose, onSubmit }: OrderFormMod
                         <SelectValue placeholder="Select product" />
                       </SelectTrigger>
                       <SelectContent>
-                        {products.map((product: any) => (
+                        {products.map((product) => (
                           <SelectItem key={product.id} value={product.id}>
                             {product.name}
                           </SelectItem>

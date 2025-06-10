@@ -7,7 +7,7 @@ export async function GET(
   request: Request,
   { params }: { params: { id: string } }
 ) {
-  const { userId } = auth()
+  const { userId } = await auth()
   if (!userId) {
     return new Response('Unauthorized', { status: 401 })
   }
@@ -28,7 +28,7 @@ export async function PUT(
   request: Request,
   { params }: { params: { id: string } }
 ) {
-  const { userId } = auth()
+  const { userId } = await auth()
   if (!userId) {
     return new Response('Unauthorized', { status: 401 })
   }

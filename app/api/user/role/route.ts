@@ -14,7 +14,7 @@ export async function GET() {
     let user = await db.select().from(users).where(eq(users.clerkId, userId)).limit(1)
 
     if (user.length === 0) {
-      const { user: clerkUser } = await auth()
+      // Cannot access user property directly from auth()
       
       const newUser = await db.insert(users).values({
         clerkId: userId,

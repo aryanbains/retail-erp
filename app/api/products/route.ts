@@ -13,10 +13,11 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url)
     const search = searchParams.get('search') || ''
 
-    let query = db.select().from(products).where(1 === 1).orderBy(desc(products.id))
+    let query;
 
     if (search) {
-      query = db.select()
+      query = db
+        .select()
         .from(products)
         .where(
           or(
@@ -25,6 +26,12 @@ export async function GET(request: Request) {
             like(products.category, `%${search}%`)
           )
         )
+        .orderBy(desc(products.id))
+    } else {
+      // For no search filter, just select all products
+      query = db
+        .select()
+        .from(products)
         .orderBy(desc(products.id))
     }
 

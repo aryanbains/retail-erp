@@ -10,17 +10,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Edit, Trash2 } from 'lucide-react'
-
-interface Product {
-  id: string
-  name: string
-  sku: string
-  category: string
-  price: string
-  stockQty: number
-  reorderLevel: number
-  status: string
-}
+import { Product } from '@/types/products'
 
 interface ProductsTableProps {
   products: Product[]
@@ -35,6 +25,7 @@ export default function ProductsTable({ products, loading, onEdit, onDelete }: P
       case 'Active': return 'bg-green-100 text-green-800'
       case 'Low Stock': return 'bg-yellow-100 text-yellow-800'
       case 'Out of Stock': return 'bg-red-100 text-red-800'
+      case 'Inactive': return 'bg-gray-100 text-gray-800'
       default: return 'bg-gray-100 text-gray-800'
     }
   }
@@ -69,12 +60,12 @@ export default function ProductsTable({ products, loading, onEdit, onDelete }: P
             <TableCell className="font-medium">{product.name}</TableCell>
             <TableCell>{product.sku}</TableCell>
             <TableCell>{product.category}</TableCell>
-            <TableCell>₹{product.price}</TableCell>
+            <TableCell>₹{product.price.toFixed(2)}</TableCell>
             <TableCell>{product.stockQty}</TableCell>
             <TableCell>{product.reorderLevel}</TableCell>
             <TableCell>
-              <Badge className={getStatusColor(product.status)}>
-                {product.status}
+              <Badge className={getStatusColor(product.status || 'Active')}>
+                {product.status || 'Active'}
               </Badge>
             </TableCell>
             <TableCell>

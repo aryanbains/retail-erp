@@ -8,13 +8,14 @@ import { Plus, Search, Upload } from "lucide-react";
 import ProductsTable from "./components/ProductsTable";
 import ProductFormModal from "./components/ProductFormModal";
 import { useToast } from "@/components/ui/use-toast";
+import { Product, ProductFormData } from "@/types/products";
 
 export default function ProductsPage() {
-  const [products, setProducts] = useState([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingProduct, setEditingProduct] = useState(null);
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -37,12 +38,18 @@ export default function ProductsPage() {
     }
   };
 
-  const handleCreateProduct = async (data: any) => {
+  const handleCreateProduct = async (data: ProductFormData) => {
     try {
+      // Convert form data to proper Product format
+      const productData = {
+        ...data,
+        price: parseFloat(data.price), // Convert string to number
+      };
+
       const response = await fetch("/api/products", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify(productData),
       });
 
       if (response.ok) {
@@ -62,12 +69,18 @@ export default function ProductsPage() {
     }
   };
 
-  const handleUpdateProduct = async (id: string, data: any) => {
+  const handleUpdateProduct = async (id: string, data: ProductFormData) => {
     try {
+      // Convert form data to proper Product format
+      const productData = {
+        ...data,
+        price: parseFloat(data.price), // Convert string to number
+      };
+
       const response = await fetch(`/api/products/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify(productData),
       });
 
       if (response.ok) {
@@ -171,7 +184,7 @@ export default function ProductsPage() {
           <ProductsTable
             products={products}
             loading={loading}
-            onEdit={(product) => {
+            onEdit={(product: Product) => {
               setEditingProduct(product);
               setIsModalOpen(true);
             }}

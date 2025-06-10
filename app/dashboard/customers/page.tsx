@@ -14,7 +14,7 @@ export default function CustomersPage() {
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [editingCustomer, setEditingCustomer] = useState(null)
+  const [editingCustomer, setEditingCustomer] = useState<any | null>(null)
 
   useEffect(() => {
     fetchCustomers()

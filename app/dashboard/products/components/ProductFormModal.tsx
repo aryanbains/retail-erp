@@ -26,13 +26,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { productSchema, ProductFormData } from '@/lib/validations/product'
+import { Product, ProductFormData } from '@/types/products'
+import { productSchema } from '@/lib/validations/product'
 
 interface ProductFormModalProps {
   open: boolean
   onClose: () => void
   onSubmit: (data: ProductFormData) => void
-  product?: any
+  product?: Product | null
 }
 
 export default function ProductFormModal({ open, onClose, onSubmit, product }: ProductFormModalProps) {
@@ -55,18 +56,27 @@ export default function ProductFormModal({ open, onClose, onSubmit, product }: P
         name: product.name,
         sku: product.sku,
         category: product.category,
-        price: product.price,
+        price: product.price.toString(), // Convert number to string for form
         stockQty: product.stockQty,
         reorderLevel: product.reorderLevel,
-        status: product.status
+        status: product.status || 'Active'
       })
     } else {
-      form.reset()
+      form.reset({
+        name: '',
+        sku: '',
+        category: '',
+        price: '',
+        stockQty: 0,
+        reorderLevel: 10,
+        status: 'Active'
+      })
     }
   }, [product, form])
 
   const handleSubmit = (data: ProductFormData) => {
     onSubmit(data)
+    form.reset() // Reset form after submission
   }
 
   const categories = ['Electronics', 'Clothing', 'Food & Beverages', 'Home & Garden', 'Sports', 'Books']
@@ -113,7 +123,7 @@ export default function ProductFormModal({ open, onClose, onSubmit, product }: P
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Category</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Select a category" />
@@ -190,7 +200,7 @@ export default function ProductFormModal({ open, onClose, onSubmit, product }: P
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Status</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Select status" />
