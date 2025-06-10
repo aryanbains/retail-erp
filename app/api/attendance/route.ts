@@ -13,18 +13,7 @@ export async function GET(request: Request) {
   const date = searchParams.get('date')
   const employeeId = searchParams.get('employeeId')
 
-  let query = db
-    .select({
-      id: attendance.id,
-      employeeId: attendance.employeeId,
-      employeeName: users.name,
-      date: attendance.date,
-      status: attendance.status,
-    })
-    .from(attendance)
-    .leftJoin(employees, eq(attendance.employeeId, employees.id))
-    .leftJoin(users, eq(employees.userId, users.id))
-
+  // Build conditions first
   const conditions = []
   if (date) {
     const startOfDay = new Date(date)
@@ -38,27 +27,33 @@ export async function GET(request: Request) {
     conditions.push(eq(attendance.employeeId, employeeId))
   }
 
-  if (conditions.length > 0) {
-    query = query.where(and(...conditions))
-  }
+  // Build query based on whether we have conditions
+  const result = conditions.length > 0 
+    ? await db
+        .select({
+          id: attendance.id,
+          employeeId: attendance.employeeId,
+          employeeName: users.name,
+          date: attendance.date,
+          status: attendance.status,
+        })
+        .from(attendance)
+        .leftJoin(employees, eq(attendance.employeeId, employees.id))
+        .leftJoin(users, eq(employees.userId, users.id))
+        .where(and(...conditions))
+        .orderBy(desc(attendance.date))
+    : await db
+        .select({
+          id: attendance.id,
+          employeeId: attendance.employeeId,
+          employeeName: users.name,
+          date: attendance.date,
+          status: attendance.status,
+        })
+        .from(attendance)
+        .leftJoin(employees, eq(attendance.employeeId, employees.id))
+        .leftJoin(users, eq(employees.userId, users.id))
+        .orderBy(desc(attendance.date))
 
-  const result = await query.orderBy(desc(attendance.date))
   return Response.json(result)
-}
-
-export async function POST(request: Request) {
-  const { userId } = await auth()
-  if (!userId) {
-    return new Response('Unauthorized', { status: 401 })
-  }
-
-  const body = await request.json()
-  
-  const newAttendance = await db.insert(attendance).values({
-    employeeId: body.employeeId,
-    date: new Date(body.date),
-    status: body.status
-  }).returning()
-
-  return Response.json(newAttendance[0])
 }
